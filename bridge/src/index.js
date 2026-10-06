@@ -1,5 +1,6 @@
 import dgram from 'node:dgram';
 import { Readable } from 'node:stream';
+import OpusScript from 'opusscript';
 import { Client, GatewayIntentBits } from 'discord.js';
 import {
   joinVoiceChannel, createAudioPlayer, createAudioResource,
@@ -10,7 +11,7 @@ import { StereoResampler, PcmFifo } from './audio.js';
 
 const {
   DISCORD_TOKEN, GUILD_ID, VOICE_CHANNEL_ID,
-  UDP_PORT = '9955', PREBUFFER_MS = '40', MAX_BUFFER_MS = '100',
+  UDP_PORT = '9955', PREBUFFER_MS = '10', MAX_BUFFER_MS = '40', BITRATE_KBPS = '64',
 } = process.env;
 
 for (const [k, v] of Object.entries({ DISCORD_TOKEN, GUILD_ID, VOICE_CHANNEL_ID })) {
@@ -37,12 +38,17 @@ udp.on('message', (msg) => {
 });
 udp.bind(Number(UDP_PORT), '127.0.0.1', () => console.log(`Escuchando al plugin en udp://127.0.0.1:${UDP_PORT}`));
 
-// --- Pull-based PCM stream: one 20 ms frame per read, never reads ahead ---
-const pcm = new Readable({
-  highWaterMark: FRAMES_PER_20MS * 4,
+// --- Pull-based Opus stream: one 20 ms packet per read, never reads ahead ---
+// RESTRICTED_LOWDELAY drops Opus' look-ahead (~2.5 ms instead of ~6.5 ms); the bitrate
+// is the "quality for latency" trade-off (lower = smaller packets, more robust over the network).
+const encoder = new OpusScript(48000, 2, OpusScript.Application.RESTRICTED_LOWDELAY);
+encoder.setBitrate(Number(BITRATE_KBPS) * 1000);
+const opusStream = new Readable({
+  objectMode: true,
+  highWaterMark: 1,
   read() {
     const f = fifo.read(FRAMES_PER_20MS);
-    this.push(Buffer.from(f.buffer, f.byteOffset, f.byteLength));
+    this.push(Buffer.from(encoder.encode(Buffer.from(f.buffer, f.byteOffset, f.byteLength), FRAMES_PER_20MS)));
   },
 });
 
@@ -66,7 +72,7 @@ client.once('clientReady', async () => {
   });
   await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
   connection.subscribe(player);
-  player.play(createAudioResource(pcm, { inputType: StreamType.Raw }));
+  player.play(createAudioResource(opusStream, { inputType: StreamType.Opus }));
   console.log('Transmitiendo el master a Discord.');
 });
 

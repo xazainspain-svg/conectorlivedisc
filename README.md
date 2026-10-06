@@ -4,12 +4,13 @@ Envía el **Master de Ableton Live** a un canal de voz de Discord con la mínima
 
 ```
 Ableton Master ─► [Live Discord Send VST3] ─UDP localhost─► bridge (Node) ─Opus─► bot en canal de voz
-   (passthrough, 0 latencia PDC)          PCM 16-bit, paquetes de 5 ms     ~40 ms prebuffer
+   (passthrough, 0 latencia PDC)          PCM 16-bit, paquetes de 2.5 ms   ~10 ms prebuffer
 ```
 
 ## Qué es "sin latencia" aquí
 - **El plugin añade 0 ms**: es passthrough puro (`setLatencySamples(0)`), no toca el audio ni compensa retardo. La copia al hilo de red es lock-free, nunca bloquea el hilo de audio.
-- **El bridge** añade un prebuffer ajustable (`PREBUFFER_MS`, 40 ms por defecto) y descarta audio viejo si se acumula (`MAX_BUFFER_MS`).
+- **El bridge** añade un prebuffer mínimo (`PREBUFFER_MS`, 10 ms por defecto) y descarta audio viejo si se acumula (`MAX_BUFFER_MS`, 40 ms). Si oyes cortes, sube `PREBUFFER_MS` a 20–40.
+- **Compresión (calidad por latencia)**: el bridge codifica con Opus en modo `RESTRICTED_LOWDELAY` (menos retardo del códec) a `BITRATE_KBPS` (64 por defecto). Bájalo (32–48) para paquetes más pequeños y robustos, o súbelo (96–128) para más calidad si tu canal lo permite.
 - **Discord** añade el suyo (codificación Opus + red + buffer del oyente, típicamente 50–150 ms). Eso no se puede eliminar desde fuera. Ten en cuenta que quien escucha oirá el audio con ese retraso respecto a lo que suena en tu sala.
 
 ## 1. Bot de Discord

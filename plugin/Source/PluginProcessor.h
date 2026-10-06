@@ -8,7 +8,7 @@ namespace ldsc
 {
 constexpr juce::uint32 kMagic = 0x4353444c; // "LDSC" little endian
 constexpr int kHeaderBytes = 16;
-constexpr int kFramesPerPacket = 240;       // 5 ms @ 48 kHz, 960 bytes payload (< MTU)
+constexpr int kFramesPerPacket = 120;       // 2.5 ms @ 48 kHz, 480 bytes payload (< MTU)
 }
 
 class SendSender;
