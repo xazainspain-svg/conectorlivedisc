@@ -1,7 +1,7 @@
 name: Build VST3 (Windows)
 on:
   push:
-    paths: ['plugin/**', '.github/workflows/build-plugin.yml']
+    paths: ['plugin/**', 'device/**', '.github/workflows/build-plugin.yml']
   workflow_dispatch:
 jobs:
   windows:
@@ -16,3 +16,15 @@ jobs:
         with:
           name: LiveDiscordSend-vst3-windows
           path: plugin/build/LiveDiscordSend_artefacts/Release/VST3/
+  device:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S device -B device/build
+      - name: Build
+        run: cmake --build device/build --config Release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ldsc-device-windows
+          path: device/build/Release/ldsc-device.exe

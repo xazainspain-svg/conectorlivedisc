@@ -48,6 +48,14 @@ Arrastra el plugin a la **pista Master** (al final de la cadena). Parámetros: `
 5. Haz doble clic en `bridge\start.bat` (la primera vez crea `.env`; rellénalo).
 6. Si el Firewall de Windows pregunta por Node, permite acceso privado (el tráfico es solo local, `127.0.0.1`).
 
+## Modo micrófono virtual (Discord te detecta como dispositivo de audio)
+Alternativa al bot: `ldsc-device.exe` recibe el audio del plugin y lo reproduce con WASAPI de baja latencia en un **cable de audio virtual**; Discord lo ve como un micrófono más (así hablas tú, sin bot).
+1. Instala un cable virtual una sola vez (p. ej. [VB-CABLE](https://vb-audio.com/Cable/), gratis) y reinicia.
+2. Descarga `ldsc-device.exe` (artefacto `ldsc-device-windows` de Actions) y ejecútalo: `ldsc-device.exe` (usa "CABLE Input" por defecto). Opciones: `--list`, `--device "nombre"`, `--port 9955`, `--prebuffer-ms 10`, `--max-ms 40`.
+3. En Discord → Ajustes de voz → Dispositivo de entrada: **CABLE Output**. Desactiva supresión de ruido, cancelación de eco y control automático de ganancia, y sube el bitrate del canal.
+4. Usa este modo **o** el bridge del bot, no los dos a la vez (comparten el puerto UDP 9955).
+No se incluye un driver propio: un driver de kernel necesita firma de Microsoft; el cable virtual ya es un driver firmado.
+
 ## Notas
 - Estéreo solamente. Cualquier sample rate: el bridge remuestrea a 48 kHz.
 - Cuidado: no pongas el bot en un canal donde tu propio cliente de Discord capture tu salida (feedback).
