@@ -127,7 +127,7 @@ int wmain(int argc, wchar_t** argv)
     const int devCh = fmt->nChannels; const double devRate = fmt->nSamplesPerSec;
 
     UINT32 defP = 0, fundP = 0, minP = 0, maxP = 0;
-    HRESULT hr = ac->GetSharedModeEnginePeriods(fmt, &defP, &fundP, &minP, &maxP);
+    HRESULT hr = ac->GetSharedModeEnginePeriod(fmt, &defP, &fundP, &minP, &maxP);
     HANDLE ev = CreateEventW(nullptr, FALSE, FALSE, nullptr);
     if (SUCCEEDED(hr)) hr = ac->InitializeSharedAudioStream(AUDCLNT_STREAMFLAGS_EVENTCALLBACK, minP, fmt, nullptr);
     if (FAILED(hr)) // fallback: regular shared stream, 10 ms
