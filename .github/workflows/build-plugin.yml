@@ -1,0 +1,18 @@
+name: Build VST3 (Windows)
+on:
+  push:
+    paths: ['plugin/**', '.github/workflows/build-plugin.yml']
+  workflow_dispatch:
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S plugin -B plugin/build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build plugin/build --config Release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LiveDiscordSend-vst3-windows
+          path: plugin/build/LiveDiscordSend_artefacts/Release/VST3/

@@ -37,6 +37,16 @@ Copia `build/LiveDiscordSend_artefacts/Release/VST3/Live Discord Send.vst3` a tu
 (Windows: `C:\Program Files\Common Files\VST3`, macOS: `/Library/Audio/Plug-Ins/VST3`) y reescanea plugins en Live.
 Arrastra el plugin a la **pista Master** (al final de la cadena). Parámetros: `Send to Discord` (on/off) y `UDP Port` (9955, igual que en el bridge).
 
+## Windows (paso a paso)
+1. Instala [Node.js 22 LTS](https://nodejs.org).
+2. **Plugin**, elige una:
+   - *Sin instalar compilador*: en GitHub → pestaña **Actions** → *Build VST3 (Windows)* → *Run workflow*; descarga el artefacto `LiveDiscordSend-vst3-windows`.
+   - *Local*: instala Visual Studio 2022 (carga de trabajo "Desarrollo para el escritorio con C++") y CMake; en PowerShell, dentro de `plugin`: `cmake -B build` y `cmake --build build --config Release`.
+3. Copia la carpeta `Live Discord Send.vst3` a `C:\Program Files\Common Files\VST3`.
+4. En Live: Preferencias → Plug-ins → activa *Use VST3 System Folders* y pulsa *Rescan*. Arrástralo al Master.
+5. Haz doble clic en `bridge\start.bat` (la primera vez crea `.env`; rellénalo).
+6. Si el Firewall de Windows pregunta por Node, permite acceso privado (el tráfico es solo local, `127.0.0.1`).
+
 ## Notas
 - Estéreo solamente. Cualquier sample rate: el bridge remuestrea a 48 kHz.
 - Cuidado: no pongas el bot en un canal donde tu propio cliente de Discord capture tu salida (feedback).
