@@ -22,7 +22,7 @@ int wmain(int argc, wchar_t** argv)
     if (list)
     {
         wprintf(L"Dispositivos de salida:\n");
-        for (auto& n : listRenderDevices()) wprintf(L"  - %ls\n", n.c_str());
+        for (auto& n : ldsc::listRenderDevices()) wprintf(L"  - %ls\n", n.c_str());
         return 0;
     }
     SetConsoleCtrlHandler(onCtrl, TRUE);
