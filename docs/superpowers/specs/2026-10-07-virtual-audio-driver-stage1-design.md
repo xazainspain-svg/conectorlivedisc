@@ -23,7 +23,10 @@ Ableton Master ─► plugin VST3 ─UDP 127.0.0.1:9955─► ldsc-device.exe �
                                                                           "Live Discord Mic" ─► Discord
 ```
 - Nueva carpeta `driver/`: driver de audio WDM/PortCls (miniport) derivado de
-  Virtual-Audio-Driver (MIT). Se conserva su aviso de licencia en `driver/LICENSE.third-party`.
+  Virtual-Audio-Driver (MIT, commit `bb34fba`). Conserva `driver/LICENSE` (MIT) y
+  `driver/THIRD_PARTY_NOTICES.md` (MS-PL, por el código derivado de ejemplos de Microsoft).
+  **Nota:** el driver base NO hace loopback (su mic emite silencio y su salida graba a archivo);
+  el loopback se implementa aquí con un buffer circular (`LoopbackRing`) en `WriteBytes`/`ReadBytes`.
 - Dos endpoints estéreo, 48 kHz, 16 y 24 bits:
   - **Live Discord Out** (reproducción)
   - **Live Discord Mic** (captura)
